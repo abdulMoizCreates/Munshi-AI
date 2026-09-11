@@ -1,138 +1,161 @@
-# Munshi AI — User Flows
+# Munshi AI — User Flows v3
 
-## 1. Guest Flow
+## 1. Guest
 
 ```text
-Open Munshi
+Landing
   ↓
-Landing Page
-  ├── Features
-  ├── Pricing
-  ├── About
-  ├── Login
-  └── Sign Up
+Features / Pricing
+  ↓
+Login or Signup
 ```
-
-Guest has no private application access.
 
 ## 2. Shopkeeper Onboarding
 
 ```text
-Sign Up
+Signup
   ↓
-Verify / establish session
-  ↓
-Create Shop Profile
-  ↓
-Choose Language
+Create Shop
   ↓
 Dashboard
-  ↓
-Add First Product / Customer
 ```
 
-Onboarding should be short and progressive.
+Keep onboarding short.
 
-## 3. Login Flow
+## 3. Login
 
 ```text
 Login
   ↓
-Supabase Auth
+Authenticated
   ↓
-Authenticated User
-  ↓
-Read authorized profile/role
-  ↓
-role?
- ├── admin → Admin Dashboard
- └── shopkeeper → Shopkeeper Dashboard
+Authorized Role
+  ├── shopkeeper → /app
+  └── admin → /admin
 ```
 
-## 4. Add Product
+## 4. Dashboard
+
+```text
+Dashboard
+  ↓
+See today's business
+  ├── Sales
+  ├── Khata outstanding
+  ├── Stock attention
+  └── Recent activity
+```
+
+The dashboard is an overview, not a place for every possible operation.
+
+## 5. Add Product
 
 ```text
 Products
   ↓
-Add Product
+Naya Product
   ↓
-Name + price + stock + threshold
-  ↓
-Validate
+Enter details
   ↓
 Save
   ↓
-Product appears in list
+Products list
 ```
 
-## 5. Record Sale
+## 6. Record Sale
 
 ```text
-New Sale
+Sales
   ↓
-Select product
+Search product
   ↓
-Quantity
+Add item
   ↓
-Add more items
-  ↓
-Select customer (optional)
-  ↓
-Payment method/status
+Set quantity
   ↓
 Review total
   ↓
-Confirm
+Optional customer
   ↓
-Create sale
+Payment status
   ↓
-Create sale items
+Confirm sale
   ↓
-Update inventory
-  ↓
-Optional khata entry if credit
-  ↓
-Success confirmation
+Inventory updates
 ```
 
-## 6. Khata Payment
+The sale workflow should require as few unnecessary steps as possible.
+
+## 7. Khata Payment
 
 ```text
-Customer
-  ↓
 Khata
   ↓
-Record Payment
+Select customer
   ↓
-Amount
+View outstanding balance
   ↓
-Confirm
+Record payment
   ↓
-New transaction
+Balance updates
   ↓
-Updated balance
+Transaction appears in history
 ```
 
-## 7. Admin Flow
+## 8. Inventory Adjustment
 
 ```text
-Admin Login
+Inventory
   ↓
-Admin Dashboard
+Select product
+  ↓
+Adjust stock
+  ↓
+Enter reason
+  ↓
+Save
+  ↓
+Stock + movement history update
+```
+
+## 9. Customer
+
+```text
+Customers
+  ↓
+Select customer
+  ↓
+Overview
+  ├── balance
+  ├── transactions
+  └── purchase history
+```
+
+## 10. Orders
+
+```text
+Orders
+  ↓
+Create / open order
+  ↓
+Customer + items
+  ↓
+Review amount
+  ↓
+Save
+  ↓
+Manage status
+```
+
+## 11. Admin
+
+```text
+Admin
+  ├── Platform Overview
   ├── Shopkeepers
   ├── Shops
   ├── Plans
-  └── Platform overview
+  └── Subscriptions
 ```
 
-Admin can manage platform-level entities but should not casually bypass security controls.
-
-## 8. Error/Empty States
-Every major screen needs:
-- Loading state
-- Empty state
-- Error state
-- Success feedback
-- Retry/recovery path
-
-Never leave users staring at a blank screen.
+Admin screens should use the same visual language but can have denser information because their job is platform management.

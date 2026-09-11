@@ -1,36 +1,34 @@
-# Munshi AI — Technical Architecture
+# Munshi AI — Technical Architecture v3
 
-## 1. Current Architecture
+## 1. MVP Architecture
 
 ```text
-React Application
-       |
-       v
-Supabase
-  |-- Authentication
-  |-- PostgreSQL Database
-  |-- Row Level Security (RLS)
-  |-- Storage / other Supabase services when needed
+React Web App
+    |
+    +---- Supabase Auth
+    |
+    +---- Supabase PostgreSQL
+    |
+    +---- Supabase RLS
 ```
 
-There is NO custom backend in the MVP.
+No custom server is required for the initial MVP.
 
-## 2. Frontend
-Recommended structure:
+## 2. Frontend Structure
 
 ```text
 src/
 ├── components/
-├── pages/
 ├── layouts/
+├── pages/
 ├── features/
 │   ├── auth/
 │   ├── dashboard/
-│   ├── products/
-│   ├── customers/
-│   ├── khata/
 │   ├── sales/
+│   ├── khata/
+│   ├── products/
 │   ├── inventory/
+│   ├── customers/
 │   ├── orders/
 │   ├── offers/
 │   └── reports/
@@ -42,113 +40,148 @@ src/
 └── styles/
 ```
 
-Feature-oriented organization is preferred as the application grows.
+Feature-oriented organization is preferred.
 
-## 3. Authentication
+## 3. App Shell
+Authenticated desktop screens share a common shell:
+
+```text
+┌────────────────┬─────────────────────────────────────────────┐
+│ Munshi AI      │ Search / utilities / notifications / user   │
+│                ├─────────────────────────────────────────────┤
+│ Dashboard      │ Page heading                  Primary action│
+│ Sales          │                                             │
+│ Khata          │ Main page content                           │
+│ Inventory      │                                             │
+│ Products       │                                             │
+│ Customers      │                                             │
+│ Orders         │                                             │
+│ Offers         │                                             │
+│ Reports        │                                             │
+│                │                                             │
+│ Settings       │                                             │
+└────────────────┴─────────────────────────────────────────────┘
+```
+
+The shell should remain visually stable across routes.
+
+## 4. Authentication
 Use Supabase Auth.
 
 Authentication answers:
 "Who is this user?"
 
 Authorization answers:
-"What is this user allowed to do?"
+"What is this user allowed to access?"
 
-Never rely on localStorage, frontend-only role checks, hidden buttons, or email comparisons for security.
+Never treat frontend state as the security boundary.
 
-## 4. Authorization
-Use database-level Row Level Security.
+## 5. Authorization
+Use RLS for shop-owned data.
 
-Every shop-owned record must be associated with a shop.
+Every shopkeeper request must be evaluated against the authenticated user and their authorized shop.
 
-Conceptually:
+Never rely on:
+- localStorage
+- hidden buttons
+- frontend-only route guards
+- email comparisons
+- client-supplied shop_id without policy validation
 
-```text
-user
-  |
-  +-- profile
-        |
-        +-- role
-        +-- shop_id
-```
-
-Shopkeeper queries must only return rows belonging to their shop.
-
-Admin policies can provide platform-level access.
-
-## 5. Routing
-Conceptual routes:
+## 6. Routing
 
 ```text
 /
- /features
- /pricing
- /login
- /signup
+/features
+/pricing
+/login
+/signup
 
- /app
- /app/products
- /app/customers
- /app/khata
- /app/sales
- /app/inventory
- /app/orders
- /app/offers
- /app/reports
+/app
+/app/sales
+/app/khata
+/app/inventory
+/app/products
+/app/customers
+/app/orders
+/app/offers
+/app/reports
 
- /admin
- /admin/shopkeepers
- /admin/shops
- /admin/plans
+/admin
+/admin/shopkeepers
+/admin/shops
+/admin/plans
+/admin/subscriptions
 ```
 
-Routes must be protected by authentication and authorization.
-
-## 6. Data Flow Example: Sale
+## 7. Sale Data Flow
 
 ```text
-Shopkeeper
-   ↓
-React Sale UI
-   ↓
+Sale UI
+  ↓
 Validate input
-   ↓
-Supabase
-   ↓
-Database transaction / safe operation
-   ↓
-Sale record + sale items + stock update
-   ↓
-Updated UI
+  ↓
+Create sale + sale items
+  ↓
+Update stock safely
+  ↓
+Record relevant movement
+  ↓
+Return updated state
+  ↓
+Refresh visible UI
 ```
 
-Data integrity is more important than convenience.
+Financial and inventory consistency is more important than frontend convenience.
 
-## 7. Future Architecture
+## 8. UI Architecture
+Create reusable primitives:
+- AppShell
+- Sidebar
+- Header
+- PageHeader
+- Metric
+- DataTable
+- StatusBadge
+- EmptyState
+- FormSection
+- SearchInput
+- Select
+- Button
+- Modal/Drawer where genuinely useful
+- Toast/feedback
 
+Components should support the same visual language across every page.
+
+## 9. Layout Stability
+Dynamic elements must not cause layout shift.
+
+Examples:
+- timers
+- changing counters
+- live statuses
+- notifications
+
+Reserve enough width for changing values and use stable containers.
+
+## 10. Future Architecture
 Only when justified:
 
 ```text
 React
   ↓
-Node + Express
+Node / Express
   ↓
-Business Logic / API
+Business Logic API
   ↓
 Database
   ↓
-AI / Agent Layer
-  ↓
-n8n / Automations
-  ↓
-External integrations
+AI / Automation / Integrations
 ```
 
-Do not prematurely implement this architecture in the MVP.
+Do not build this during MVP merely because it may be useful later.
 
-## 8. Environment Variables
-Never expose service-role keys or privileged credentials in the frontend.
+## 11. Environment Security
+Never expose service-role credentials in the browser.
 
-Only browser-safe Supabase configuration may be exposed to the React client.
-
-## 9. Architecture Principle
-Build the MVP simply, but avoid decisions that make future extraction of business logic impossible.
+Only browser-safe Supabase configuration may be used client-side.

@@ -1,148 +1,388 @@
-# Munshi AI — UX/UI Design Specification
+# Munshi AI — UX/UI Design System v3
 
-## 1. Design Direction
-Munshi should feel:
-- Trustworthy
-- Simple
-- Friendly
-- Modern
-- Practical
-- Fast
-- Professional without feeling corporate
+## 1. Approved Visual Direction
 
-The visual language should suit Pakistani small-business owners.
+The supplied reference is now the primary visual direction for the application.
 
-## 2. Mobile First
-Primary design target: Android phone.
+The design language can be summarized as:
 
-Desktop should be responsive, but mobile usability comes first.
+> **Minimal business dashboard + soft modern SaaS + purposeful color + strong spacing + restrained rounded surfaces.**
 
-## 3. Information Hierarchy
-Common shopkeeper actions should be immediately visible.
+The goal is not to copy another product. The goal is to reproduce the same level of simplicity, balance and visual confidence.
 
-Priority:
-1. Sales
-2. Khata
-3. Stock/inventory
-4. Customers
-5. Products
-6. Reports
-7. Secondary management
+## 2. Visual Personality
 
-Exact navigation order can be validated during prototyping.
+Munshi AI should feel:
+- modern
+- calm
+- reliable
+- friendly
+- professional
+- lightweight
+- practical
+- premium without being luxurious
 
-## 4. UX Principles
-- Reduce steps for frequent actions.
-- Prefer clear labels over clever icons.
-- Use familiar business language.
-- Keep destructive actions explicit.
-- Give immediate feedback after important actions.
-- Preserve user input when validation fails.
-- Avoid unnecessary modals.
-- Use progressive disclosure for advanced options.
-- Make financial numbers visually easy to scan.
+It should NOT feel:
+- futuristic
+- robotic
+- AI-generated
+- corporate ERP
+- childish
+- overly playful
+- visually noisy
 
-## 5. Typography
-Typography should prioritize:
-- Legibility on low-to-mid-range Android screens
-- Clear numeric characters
-- Strong hierarchy
-- Comfortable line height
+## 3. Layout
 
-Choose a highly readable modern sans-serif with good Latin support. Verify Roman Urdu readability before locking the font.
+### Desktop
+Use a persistent left sidebar.
 
-## 6. Spacing
-Use a consistent spacing scale rather than arbitrary margins.
+Approximate structure:
 
-Suggested base:
-4px / 8px rhythm.
+```text
+Sidebar 240–270px
+Main content = remaining width
 
-Common spacing:
+Top utility bar
+↓
+Page header
+↓
+Main content sections
+```
+
+Do not squeeze the main content.
+
+### Main Content
+Use a comfortable maximum content width when appropriate, while allowing tables and business workflows to use available width.
+
+## 4. Sidebar
+
+The sidebar should be visually quiet.
+
+Include:
+- Munshi AI brand/logo area
+- Dashboard
+- Sales
+- Products
+- Inventory
+- Customers
+- Khata
+- Orders
+- Offers
+- Reports
+
+Separate:
+- Settings
+- profile/account
+
+Active navigation should use a soft filled state rather than a loud border or gradient.
+
+Avoid:
+- giant icons
+- decorative symbols
+- random badges
+- excessive navigation sections
+
+## 5. Header
+
+The header should contain only useful utilities:
+- global search
+- notifications
+- profile/shop identity
+
+Search should feel like a utility, not a giant hero element.
+
+## 6. Page Header
+
+Use:
+- small contextual greeting or breadcrumb where useful
+- clear page title
+- one short supporting sentence when needed
+- one primary action
+
+Example:
+
+**Good morning, Abdul.**
+**Here's what's happening at your shop today.**
+
+Supporting line:
+**Keep track of sales, stock and your business performance.**
+
+Do not write long explanatory copy inside the app.
+
+## 7. Dashboard Layout
+
+Recommended composition:
+
+```text
+Page Header
+────────────────────────────────────────
+
+Small summary metrics
+────────────────────────────────────────
+
+Sales Overview          Top Selling Products
+────────────────────    ────────────────────
+
+Recent Sales            Inventory Status
+────────────────────    ────────────────────
+```
+
+The exact grid may change, but the principle stays:
+**few sections, strong hierarchy, no dashboard wall.**
+
+## 8. Metric Cards
+
+Use a small number of metrics.
+
+Each metric should have:
+- subtle icon container
+- label
+- primary number
+- small trend/context line
+
+Do not put a chart inside every metric.
+
+Use accent colors sparingly.
+
+## 9. Cards / Surfaces
+
+Cards should be:
+- white/near-white
+- lightly bordered or subtly shadowed
+- moderately rounded
+- spacious internally
+
+Avoid:
+- extreme corner radii
+- thick borders
+- heavy shadows
+- cards nested inside cards
+
+## 10. Color Strategy
+
+Brand colors are still not permanently locked.
+
+The approved interaction principle is:
+
+**neutral foundation + small purposeful accents.**
+
+Possible semantic/accent roles:
+- primary brand accent
+- positive/success
+- warning
+- danger
+- informational accent
+- optional secondary accent
+
+Accent colors should communicate meaning or establish hierarchy.
+
+Do not color every component.
+
+Avoid rainbow dashboards.
+
+## 11. Typography
+
+Use a modern, highly readable sans-serif.
+
+Hierarchy:
+- page title: strong and prominent
+- section title: medium/semibold
+- body: comfortable reading size
+- metadata: smaller and quieter
+- financial values: large, high contrast
+
+Numbers should be especially legible.
+
+## 12. Spacing
+
+Use consistent spacing tokens.
+
+Suggested base rhythm:
 - 4
 - 8
 - 12
 - 16
+- 20
 - 24
 - 32
-- 48
+- 40
 
-Golden-ratio-inspired proportions can guide visual balance, but consistency and usability take priority over mathematical decoration.
+Do not use arbitrary spacing for every component.
 
-## 7. Color
-The final palette should communicate:
-- Trust
-- Financial clarity
-- Growth
-- Reliability
+## 13. Radius
 
-Do not overload the interface with many saturated colors.
+Use restrained rounded corners.
 
-Semantic colors:
-- Success
-- Warning
-- Error
-- Information
+Suggested:
+- controls: 8–12px
+- cards: 14–18px
+- larger panels: 18–22px
 
-Semantic color must never be the only way information is communicated.
+Do not make every object pill-shaped.
 
-## 8. Components
-Create reusable components for:
-- Buttons
-- Inputs
-- Selects
-- Cards
-- Tables/lists
-- Badges
-- Dialogs
-- Toasts
-- Navigation
-- Bottom navigation
-- Product rows
-- Customer rows
-- Transaction rows
-- Empty states
-- Loading skeletons
+## 14. Borders and Shadows
 
-## 9. Dashboard
-Dashboard should answer within seconds:
-- How much did I sell?
-- Who owes me?
-- What is running low?
-- What should I do next?
+Prefer subtle borders and very soft shadows.
 
-Avoid dashboard clutter.
+The UI should still look clean if shadows are removed.
 
-## 10. Language
-Support:
-- English
-- Roman Urdu
+## 15. Icons
 
-Do not perform literal word-by-word translation blindly.
+Use one consistent outline icon family.
 
-Example:
-- English: "Add Customer"
-- Better Roman Urdu UX: "Naya Customer"
+Icons should:
+- support recognition
+- remain visually quiet
+- have consistent stroke weight
 
-Language should sound natural to the target user.
+Do not use decorative icons simply to fill space.
 
-## 11. Accessibility
-- Adequate contrast
-- Touch targets suitable for mobile
-- Keyboard accessibility where relevant
-- Visible focus states
-- Meaningful labels
-- Screen-reader-friendly semantics where practical
+## 16. Tables
 
-## 12. Design Process
-Google Stitch may be used for visual exploration and initial concepts.
+Tables are important for desktop.
 
-AI-generated UI is a starting point, not final authority.
+Prioritize:
+- readable rows
+- sufficient horizontal spacing
+- clear column labels
+- subtle dividers
+- obvious row actions
+- status badges only where useful
 
-Every design should be reviewed against:
-- User task
-- Information hierarchy
-- Cognitive load
-- Accessibility
-- Mobile ergonomics
-- Consistency
-- Product goals
+Avoid excessive zebra striping and excessive borders.
+
+## 17. Charts
+
+Charts should answer a business question.
+
+Examples:
+- sales over time
+- top products
+- inventory status
+
+Use restrained visual treatment.
+
+Do not add charts just because empty space exists.
+
+## 18. Forms
+
+Forms should be:
+- short
+- grouped logically
+- easy to scan
+- clearly labeled
+
+Use one primary action.
+
+Do not turn simple forms into multi-step wizards.
+
+## 19. Buttons
+
+Primary button:
+- clear
+- visually prominent
+- not oversized
+
+Secondary actions:
+- quieter
+
+Destructive actions:
+- clearly differentiated
+
+Avoid multiple competing primary buttons.
+
+## 20. Interaction
+
+Interaction should feel smooth but quiet.
+
+Use:
+- hover states
+- focus states
+- pressed states
+- subtle transitions
+
+Avoid:
+- bouncing elements
+- flashy animations
+- floating decorations
+- layout-shifting live widgets
+
+## 21. Dynamic Content / Timer Rule
+
+Any timer, live counter or changing status must use a fixed-size container.
+
+Reserve enough width for the largest expected value.
+
+If numeric values change, use tabular/monospaced numerals where appropriate.
+
+**No layout shift.**
+
+## 22. Empty States
+Empty states should explain:
+- what is missing
+- why it matters
+- what the user can do next
+
+Keep them simple.
+
+## 23. Loading
+Prefer:
+- skeletons
+- stable placeholders
+- minimal spinners where appropriate
+
+Never let loading states radically change layout dimensions.
+
+## 24. Error / Success
+Feedback should be:
+- immediate
+- concise
+- understandable
+
+Avoid technical error messages for shopkeepers.
+
+## 25. Responsive Design
+
+Desktop is primary.
+
+### Tablet
+- compact sidebar
+- reduced spacing
+- preserve tables where practical
+
+### Mobile
+- stack sections
+- adapt tables into readable layouts
+- preserve same navigation concepts
+- maintain clear primary actions
+
+Do not redesign the product as a mobile-first app.
+
+## 26. Design Guardrails
+
+Never introduce without a real product reason:
+- decorative dots
+- random symbols
+- sparkles
+- AI/robot graphics
+- gradients everywhere
+- glassmorphism
+- excessive cards
+- card-inside-card
+- huge KPI walls
+- giant illustrations
+- oversized empty areas
+- unnecessary modals
+- excessive floating buttons
+
+## 27. Quality Test
+
+Before approving a screen, ask:
+
+1. Can I understand the screen in 3 seconds?
+2. Is the primary action obvious?
+3. Is there anything decorative that does not help?
+4. Does the layout feel balanced?
+5. Are numbers and business data easy to scan?
+6. Does it look like a real business product rather than AI-generated UI?
+7. Does anything move or shift unexpectedly?

@@ -1,71 +1,70 @@
-# Munshi AI — CLI Coding Agent Rules
+# Munshi AI — CLI / Coding Agent Rules v3
 
-## Project Context
-Munshi AI is a real SaaS product for Pakistani general-store shopkeepers.
+## 1. Architecture Rules
+- Use React for the MVP frontend.
+- Use Supabase for auth and database.
+- Do not add Node/Express unless explicitly approved.
+- Do not add MongoDB.
+- Do not add n8n.
+- Do not add agentic workflows.
+- Do not create unnecessary backend layers.
 
-## Current Stack
-- React
-- Supabase
-- PostgreSQL through Supabase
-- Supabase Auth
-- Supabase RLS
+## 2. Security Rules
+- RLS is mandatory for shop-owned data.
+- Never use frontend checks as the only authorization.
+- Never expose service-role credentials.
+- Never allow public signup to assign admin.
 
-## Explicitly NOT in Current MVP
-- Node.js custom backend
-- Express.js API
-- MongoDB
-- n8n
-- Agentic workflows
-- Automation engine
+## 3. UI Rules
+The approved visual direction is:
+- clean
+- minimal
+- modern
+- desktop-first
+- calm
+- practical
+- premium
+- restrained
 
-Do not introduce these technologies unless explicitly requested.
+Avoid:
+- AI aesthetics
+- sparkles
+- random dots
+- random symbols
+- gradients everywhere
+- glassmorphism
+- excessive cards
+- card-inside-card
+- huge KPI walls
+- decorative illustrations
+- unnecessary animation
 
-## Coding Principles
-1. Prefer simple solutions.
-2. Do not over-engineer.
-3. Keep components maintainable.
-4. Reuse components where appropriate.
-5. Keep feature logic organized.
-6. Never bypass RLS for convenience.
-7. Never put privileged Supabase credentials in the client.
-8. Validate user input.
-9. Handle loading, empty, error and success states.
-10. Keep mobile UX as the primary concern.
-11. Do not hardcode role-based security in the frontend.
-12. Avoid unnecessary dependencies.
+## 4. Layout Rules
+- Persistent desktop sidebar.
+- Clean top utility area.
+- Spacious main content.
+- Tables for desktop data-heavy screens.
+- One primary action per screen.
+- Keep layouts stable.
 
-## Database Rules
-- Use Supabase PostgreSQL.
-- Enable RLS for private tables.
-- Every shop-owned record must be safely associated with its shop.
-- Never trust a client-provided shop_id for authorization.
-- Protect financial consistency.
+## 5. Dynamic UI
+Timers, counters and changing states must not cause layout shift.
 
-## Role Rules
-- Guest = unauthenticated public visitor.
-- Shopkeeper = access to own shop.
-- Admin = platform-level access.
-- Public signup must never allow self-assigned admin privileges.
+Use fixed dimensions and reserved space.
 
-## UI Rules
-- Mobile first.
-- Simple language.
-- English + Roman Urdu.
-- Clear touch targets.
-- Strong hierarchy.
-- Avoid unnecessary visual complexity.
+## 6. Component Reuse
+Prefer reusable components over duplicated page-specific UI.
 
-## Development Workflow
-For every feature:
-1. Understand requirement.
-2. Inspect existing code.
-3. Plan minimal implementation.
-4. Implement.
-5. Test happy path.
-6. Test validation/error states.
-7. Test authorization.
-8. Review for regressions.
-9. Keep code clean.
+## 7. Data Integrity
+Never fake success.
 
-## Important
-Do not invent missing requirements silently. If a requirement materially affects architecture or data integrity, ask for clarification or document the assumption.
+Only update UI state as successful after the underlying operation succeeds.
+
+## 8. Before Adding a Feature
+Ask:
+1. Is it required by the MVP?
+2. Does it simplify a real shopkeeper workflow?
+3. Does it fit the approved design system?
+4. Does it create unnecessary architecture?
+
+If not, do not add it.

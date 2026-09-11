@@ -1,89 +1,57 @@
-# Munshi AI — Database Schema
+# Munshi AI — Database Schema v3
 
-## 1. Database
-Supabase PostgreSQL is the database for the initial MVP.
+## 1. Core Tables
 
-## 2. Core Entities
-
-```text
-profiles
-shops
-products
-customers
-sales
-sale_items
-khata_entries
-stock_movements
-orders
-order_items
-offers
-subscriptions
-plans
-```
-
-## 3. profiles
-Purpose: application-level information about authenticated users.
-
-Suggested fields:
-- id (uuid, references auth.users)
+### profiles
+- id
 - full_name
-- role (`admin` | `shopkeeper`)
-- shop_id (nullable for admin)
-- preferred_language (`en` | `roman_urdu`)
+- phone
+- role
+- shop_id
+- created_at
+
+Roles:
+- shopkeeper
+- admin
+
+### shops
+- id
+- name
+- owner_id
+- phone
+- address
+- created_at
+
+### products
+- id
+- shop_id
+- name
+- sku
+- selling_price
+- cost_price
+- stock_quantity
+- low_stock_threshold
 - created_at
 - updated_at
 
-## 4. shops
-Suggested fields:
+### customers
 - id
-- owner_id
-- shop_name
+- shop_id
+- name
 - phone
 - address
 - created_at
 - updated_at
 
-A shopkeeper normally owns one shop in the MVP.
-
-## 5. products
-Suggested fields:
+### sales
 - id
 - shop_id
-- name
-- sku (optional)
-- category_id (optional future)
-- cost_price
-- selling_price
-- stock_quantity
-- low_stock_threshold
-- unit
-- is_active
-- created_at
-- updated_at
-
-## 6. customers
-Suggested fields:
-- id
-- shop_id
-- name
-- phone
-- address (optional)
-- notes (optional)
-- created_at
-- updated_at
-
-## 7. sales
-Suggested fields:
-- id
-- shop_id
-- customer_id (nullable)
+- customer_id
 - total_amount
-- payment_method
 - payment_status
 - created_at
 
-## 8. sale_items
-Suggested fields:
+### sale_items
 - id
 - sale_id
 - product_id
@@ -91,43 +59,33 @@ Suggested fields:
 - unit_price
 - subtotal
 
-## 9. khata_entries
-Suggested fields:
+### khata_entries
 - id
 - shop_id
 - customer_id
-- type (`credit` | `payment` | `debit` as business rules require)
+- type
 - amount
-- description
-- reference_sale_id (nullable)
-- created_at
-
-The exact balance model should be finalized before implementation.
-
-## 10. stock_movements
-Suggested fields:
-- id
-- shop_id
-- product_id
-- type (`sale` | `purchase` | `adjustment` | `return`)
-- quantity
-- reference_id (nullable)
 - note
 - created_at
 
-## 11. orders
-Suggested fields:
+### stock_movements
 - id
 - shop_id
-- customer_id (nullable)
+- product_id
+- type
+- quantity
+- note
+- created_at
+
+### orders
+- id
+- shop_id
+- customer_id
 - status
 - total_amount
-- notes
 - created_at
-- updated_at
 
-## 12. order_items
-Suggested fields:
+### order_items
 - id
 - order_id
 - product_id
@@ -135,33 +93,55 @@ Suggested fields:
 - unit_price
 - subtotal
 
-## 13. offers
-Suggested fields:
+### offers
 - id
 - shop_id
 - title
 - description
 - discount_type
 - discount_value
-- starts_at
+- start_at
+- end_at
+- active
+
+### plans
+- id
+- name
+- price
+- billing_period
+- features
+
+### subscriptions
+- id
+- shop_id
+- plan_id
+- status
+- trial_start
+- trial_end
+- started_at
 - ends_at
-- is_active
-- created_at
-- updated_at
 
-## 14. plans / subscriptions
-These will support monetization.
+## 2. Ownership
+Shop-owned records must be linked to a shop.
 
-The exact billing provider and schema should be finalized when payment integration is actually implemented.
+Where practical, use direct `shop_id` columns to make RLS policies explicit and easy to audit.
 
-## 15. Critical Database Rules
-- Every shop-owned table must have `shop_id` directly or through a secure relationship.
-- Enable RLS on all private tables.
-- Shopkeepers can only SELECT/INSERT/UPDATE/DELETE their own shop data according to business rules.
-- Admin permissions must be explicitly defined.
-- Never trust client-provided `shop_id` for authorization.
-- Prefer database constraints for data integrity.
-- Monetary values require appropriate numeric types; avoid floating-point money calculations.
+## 3. RLS
+Enable RLS on private tables.
 
-## 16. Important Implementation Note
-Sales and stock changes must remain consistent. If a sale reduces stock, the implementation must prevent partial updates that could create incorrect inventory.
+Policies must derive authorization from the authenticated user's trusted relationship to the shop.
+
+## 4. Money
+Use exact numeric/decimal types for money.
+
+Do not use floating-point values for financial amounts.
+
+## 5. Inventory Integrity
+A sale should not silently create inconsistent stock.
+
+Stock changes should have traceable movement records where required.
+
+## 6. Schema Evolution
+Keep the MVP schema simple.
+
+Do not create tables for future AI agents, automation jobs, WhatsApp workflows or analytics pipelines until those features are actually implemented.

@@ -1,102 +1,61 @@
-# Munshi AI — Security & Authorization
+# Munshi AI — Security & Authorization v3
 
-## 1. Core Principle
-Authentication and authorization are different.
+## 1. Core Rule
+Authentication identifies a user.
 
-Authentication:
-"Who are you?"
+Authorization decides what the user may access.
 
-Authorization:
-"What are you allowed to do?"
+Never confuse the two.
 
-## 2. Authentication
-Supabase Auth is the source of authentication.
-
-Use:
-- Secure login
-- Secure signup
-- Session management
-- Logout
-- Password recovery when implemented
-
-## 3. Roles
-Allowed application roles:
-- admin
+## 2. Roles
+- guest
 - shopkeeper
+- admin
 
-Guest is an unauthenticated state, not a privileged database role.
+Guest is unauthenticated.
 
-## 4. Role Assignment
-Users must NOT be able to choose `admin` during public signup.
+Shopkeeper and admin are authenticated roles.
 
-Admin accounts must be provisioned through a trusted process.
+## 3. Shop Isolation
+Shopkeeper A must never read or modify Shopkeeper B's data.
 
-## 5. Row Level Security
-RLS is mandatory for private business data.
+RLS is the database security boundary.
 
-Example conceptual rule:
-
-```text
-shopkeeper can access row
-ONLY IF
-row.shop_id belongs to authenticated user's shop
-```
-
-Do not rely on:
-- React conditional rendering
+## 4. Never Trust
+Do not use these as authorization:
+- frontend role variables
+- localStorage
 - URL parameters
 - hidden buttons
-- localStorage role values
-- client-supplied shop IDs
+- email comparisons
+- client-supplied shop_id alone
 
-## 6. Admin Access
-Admin permissions must be explicitly represented and enforced.
+## 5. Admin
+Admin access must be granted through a trusted administrative mechanism.
 
-Admin should be able to manage platform resources according to defined policies.
+Public signup must never allow a user to choose `admin`.
+
+## 6. Financial Operations
+Sales, payments, khata entries and inventory updates require careful consistency.
+
+The UI must not claim success until the relevant database operation succeeds.
 
 ## 7. Secrets
-Never put:
+Never expose:
 - Supabase service-role key
-- private API secrets
-- payment secrets
-- privileged credentials
+- privileged API keys
+- server-only credentials
 
-in frontend source code.
+in frontend code.
 
-## 8. Input Validation
-Validate:
-- Required fields
-- Numeric values
-- Quantity
-- Prices
-- Phone formats where appropriate
-- UUIDs / identifiers
-- Business constraints
+## 8. Validation
+Validate input on the client for usability.
 
-Frontend validation improves UX.
-Database constraints/RLS provide security.
+Do not treat client validation as the security boundary.
 
-## 9. Financial Data
-Money calculations should avoid floating-point errors.
+Database constraints and authorization policies remain authoritative.
 
-Use suitable PostgreSQL numeric types and consistent rounding rules.
+## 9. Error Handling
+Do not expose sensitive database details to shopkeepers.
 
-## 10. Auditability
-For important business actions, consider storing:
-- created_at
-- updated_at
-- actor/user ID
-- references to originating transaction
-
-Detailed audit logs can be expanded later.
-
-## 11. Security Review Checklist
-Before production:
-- RLS enabled everywhere required
-- Policies tested with multiple users
-- Admin access tested
-- Shopkeeper cross-shop access tested
-- Service-role credentials protected
-- Validation tested
-- Unauthorized routes tested
-- Error messages do not leak secrets
+Show simple user-facing errors and log/debug technical information appropriately during development.

@@ -1,50 +1,52 @@
-# Munshi AI — Localization Strategy
+# Munshi AI — Localization v3
 
-## Supported Languages
-1. English (`en`)
-2. Roman Urdu (`roman_urdu`)
+## 1. Languages
+MVP UI should support:
+- English
+- natural Roman Urdu
 
-## Principles
-Roman Urdu is not a literal English translation.
+## 2. Language Philosophy
+Roman Urdu should sound like a Pakistani shopkeeper/business user would naturally understand it.
 
-The goal is natural language understood by the target Pakistani shopkeeper.
+Avoid literal machine translations.
 
-## Examples
+Good:
+- Naya Customer
+- Naya Product
+- Baqi Raqam
+- Stock Kam Hai
+- Aaj ki Sales
+- Payment Jama Karein
+
+Avoid awkward literal translations.
+
+## 3. Terminology
+Use consistent terms.
 
 | English | Roman Urdu |
 |---|---|
 | Dashboard | Dashboard |
-| Add Customer | Naya Customer |
-| Customers | Customers |
+| Sales | Sales |
+| Customer | Customer |
+| Products | Products |
 | Inventory | Stock |
+| Khata | Khata |
 | Outstanding Balance | Baqi Raqam |
-| Record Payment | Payment Jama Karein |
-| Today's Sales | Aaj Ki Sale |
 | Low Stock | Stock Kam Hai |
-| Total Sales | Kul Sale |
+| Add Customer | Naya Customer |
+| Add Product | Naya Product |
+| Record Payment | Payment Jama Karein |
+| Total Sales | Kul Sales |
 
-These are starting examples. Validate terminology with real target users.
+## 4. UI Design Implication
+Layouts must tolerate different text lengths.
 
-## Implementation
-Do not hardcode user-facing strings throughout components.
+Do not hard-code widths around English-only labels.
 
-Use a centralized translation structure, for example:
+## 5. Numbers
+Financial numbers should remain highly readable.
 
-```text
-translations/
-  en.ts
-  romanUrdu.ts
-```
+Use Pakistani currency presentation such as:
+`Rs. 24,580`
 
-Example concept:
-
-```js
-t("dashboard.todaySales")
-```
-
-## Rules
-- Keep terminology consistent.
-- Do not translate product names or user-entered data.
-- Numbers and currency should follow appropriate formatting.
-- UI labels should remain short.
-- Roman Urdu spelling can vary; choose one consistent product vocabulary.
+Formatting rules should eventually be centralized.
