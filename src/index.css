@@ -1,17 +1,65 @@
 @import "tailwindcss";
 
+:root {
+  --bg-app: #f5f1eb;
+  --panel: rgba(255, 255, 255, 0.88);
+  --panel-strong: #ffffff;
+  --surface-muted: #f8f4ef;
+  --line-soft: rgba(15, 23, 42, 0.08);
+  --line-strong: rgba(15, 23, 42, 0.12);
+  --text: #1f2937;
+  --text-soft: #475467;
+  --text-muted: #667085;
+  --accent: #1f7a5a;
+  --accent-strong: #165f46;
+  --accent-soft: #eaf7f1;
+  --amber: #b76a00;
+  --amber-soft: #fff3db;
+  --rose: #c2410c;
+  --rose-soft: #fff1ec;
+  --blue: #1d4ed8;
+  --blue-soft: #edf4ff;
+}
+
 @layer base {
+  * {
+    box-sizing: border-box;
+  }
+
+  html,
+  body,
+  #root {
+    height: 100%;
+    margin: 0;
+  }
+
   body {
-    background-color: #f8fafc;
-    color: #0f172a;
+    background:
+      radial-gradient(circle at top left, rgba(31, 122, 90, 0.05), transparent 32%),
+      var(--bg-app);
+    color: var(--text);
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-family: Inter, "Segoe UI", sans-serif;
+  }
+
+  button,
+  input,
+  select,
+  textarea {
+    font: inherit;
+  }
+
+  ::selection {
+    background: rgba(31, 122, 90, 0.18);
   }
 }
 
-/* Custom subtle scrollbar */
+/* Custom scrollbar */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 8px;
+  height: 8px;
 }
 
 ::-webkit-scrollbar-track {
@@ -19,10 +67,32 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: rgba(148, 163, 184, 0.7);
   border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: rgba(100, 116, 139, 0.85);
+}
+
+@layer utilities {
+  .soft-surface {
+    background: var(--panel);
+    border: 1px solid var(--line-soft);
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.04);
+  }
+
+  .soft-surface-strong {
+    background: var(--panel-strong);
+    border: 1px solid var(--line-soft);
+    box-shadow: 0 12px 28px rgba(15, 23, 42, 0.04);
+  }
+
+  .soft-label {
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--text-muted);
+  }
 }

@@ -44,18 +44,16 @@ const MainLayout: React.FC = () => {
   };
 
   return (
-    <div className="flex h-screen w-screen overflow-hidden bg-slate-50 text-slate-900">
-      {/* Navigation Sidebar */}
+    <div className="flex h-screen w-screen overflow-hidden bg-[var(--bg-app)] text-[var(--text)]">
       <Sidebar />
 
-      {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         <Header />
         <main
           id="main-viewport"
-          className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8"
+          className="flex-1 overflow-y-auto p-4 sm:p-5 lg:p-7"
         >
-          <div className="max-w-7xl mx-auto">
+          <div className="max-w-[1500px] mx-auto">
             {renderCurrentView()}
           </div>
         </main>

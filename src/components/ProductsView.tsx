@@ -35,6 +35,22 @@ export const ProductsView: React.FC = () => {
     lowStockThreshold: '5',
   });
 
+  const categoryOptions = useMemo(() => {
+    const defaultCategories = [
+      'Groceries',
+      'Beverages & Tea',
+      'Snacks',
+      'Household',
+      'Personal Care',
+      'Bakery',
+      'Frozen Foods',
+    ];
+
+    const set = new Set<string>(defaultCategories);
+    products.forEach((p) => set.add(p.category));
+    return Array.from(set);
+  }, [products]);
+
   const categories = useMemo(() => {
     const set = new Set<string>();
     products.forEach((p) => set.add(p.category));
@@ -54,7 +70,7 @@ export const ProductsView: React.FC = () => {
     setEditingProduct(null);
     setFormData({
       name: '',
-      category: 'Beverages & Tea',
+      category: categoryOptions[0] || 'Groceries',
       sku: `SKU-${Math.floor(100 + Math.random() * 900)}`,
       unit: 'pack',
       sellingPrice: '',
@@ -299,13 +315,18 @@ export const ProductsView: React.FC = () => {
                   <label className="block text-xs font-semibold text-slate-700 mb-1">
                     Category
                   </label>
-                  <input
-                    type="text"
+                  <select
                     required
                     value={formData.category}
                     onChange={(e) => setFormData({ ...formData, category: e.target.value })}
                     className="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg text-xs"
-                  />
+                  >
+                    {categoryOptions.map((category) => (
+                      <option key={category} value={category}>
+                        {category}
+                      </option>
+                    ))}
+                  </select>
                 </div>
                 <div>
                   <label className="block text-xs font-semibold text-slate-700 mb-1">

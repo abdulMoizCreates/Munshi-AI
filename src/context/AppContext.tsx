@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
 import {
   Language,
   ViewType,
@@ -23,6 +23,7 @@ import {
   initialOrders,
   initialOffers,
 } from '../data/initialData';
+import { supabase } from '../lib/supabase';
 
 interface AppContextType {
   language: Language;
@@ -71,21 +72,280 @@ interface AppContextType {
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
-const STORAGE_KEYS = {
-  LANG: 'munshi_lang',
-  PRODUCTS: 'munshi_products_v1',
-  CUSTOMERS: 'munshi_customers_v1',
-  SALES: 'munshi_sales_v1',
-  KHATA: 'munshi_khata_v1',
-  STOCK: 'munshi_stock_v1',
-  ORDERS: 'munshi_orders_v1',
-  OFFERS: 'munshi_offers_v1',
+const DEFAULT_LANGUAGE: Language = 'en';
+
+const serializeRecord = (tableName: string, record: any) => {
+  switch (tableName) {
+    case 'products':
+      return {
+        id: record.id,
+        shop_id: record.shopId,
+        name: record.name,
+        category: record.category,
+        sku: record.sku,
+        unit: record.unit,
+        selling_price: record.sellingPrice,
+        cost_price: record.costPrice,
+        stock_quantity: record.stockQuantity,
+        low_stock_threshold: record.lowStockThreshold,
+        created_at: record.createdAt,
+        updated_at: record.updatedAt,
+      };
+    case 'customers':
+      return {
+        id: record.id,
+        shop_id: record.shopId,
+        name: record.name,
+        phone: record.phone,
+        address: record.address,
+        khata_balance: record.khataBalance,
+        created_at: record.createdAt,
+        updated_at: record.updatedAt,
+      };
+    case 'sales':
+      return {
+        id: record.id,
+        shop_id: record.shopId,
+        invoice_number: record.invoiceNumber,
+        customer_id: record.customerId ?? null,
+        customer_name: record.customerName ?? null,
+        items: record.items,
+        total_amount: record.totalAmount,
+        payment_status: record.paymentStatus,
+        paid_amount: record.paidAmount,
+        khata_amount: record.khataAmount,
+        payment_method: record.paymentMethod,
+        created_at: record.createdAt,
+      };
+    case 'khata_entries':
+      return {
+        id: record.id,
+        shop_id: record.shopId,
+        customer_id: record.customerId,
+        customer_name: record.customerName,
+        type: record.type,
+        amount: record.amount,
+        note: record.note,
+        sale_id: record.saleId ?? null,
+        created_at: record.createdAt,
+      };
+    case 'stock_movements':
+      return {
+        id: record.id,
+        shop_id: record.shopId,
+        product_id: record.productId,
+        product_name: record.productName,
+        type: record.type,
+        quantity: record.quantity,
+        previous_stock: record.previousStock,
+        new_stock: record.newStock,
+        note: record.note,
+        created_at: record.createdAt,
+      };
+    case 'orders':
+      return {
+        id: record.id,
+        shop_id: record.shopId,
+        order_number: record.orderNumber,
+        customer_id: record.customerId ?? null,
+        customer_name: record.customerName,
+        customer_phone: record.customerPhone,
+        items: record.items,
+        status: record.status,
+        total_amount: record.totalAmount,
+        notes: record.notes ?? null,
+        created_at: record.createdAt,
+      };
+    case 'offers':
+      return {
+        id: record.id,
+        shop_id: record.shopId,
+        title: record.title,
+        description: record.description,
+        discount_type: record.discountType,
+        discount_value: record.discountValue,
+        start_at: record.startAt,
+        end_at: record.endAt,
+        active: record.active,
+      };
+    default:
+      return record;
+  }
+};
+
+const deserializeRecord = (tableName: string, row: any) => {
+  switch (tableName) {
+    case 'products':
+      return {
+        id: row.id,
+        shopId: row.shop_id,
+        name: row.name,
+        category: row.category,
+        sku: row.sku,
+        unit: row.unit,
+        sellingPrice: row.selling_price,
+        costPrice: row.cost_price,
+        stockQuantity: row.stock_quantity,
+        lowStockThreshold: row.low_stock_threshold,
+        createdAt: row.created_at,
+        updatedAt: row.updated_at,
+      };
+    case 'customers':
+      return {
+        id: row.id,
+        shopId: row.shop_id,
+        name: row.name,
+        phone: row.phone,
+        address: row.address,
+        khataBalance: row.khata_balance,
+        createdAt: row.created_at,
+        updatedAt: row.updated_at,
+      };
+    case 'sales':
+      return {
+        id: row.id,
+        shopId: row.shop_id,
+        invoiceNumber: row.invoice_number,
+        customerId: row.customer_id ?? undefined,
+        customerName: row.customer_name ?? undefined,
+        items: row.items,
+        totalAmount: row.total_amount,
+        paymentStatus: row.payment_status,
+        paidAmount: row.paid_amount,
+        khataAmount: row.khata_amount,
+        paymentMethod: row.payment_method,
+        createdAt: row.created_at,
+      };
+    case 'khata_entries':
+      return {
+        id: row.id,
+        shopId: row.shop_id,
+        customerId: row.customer_id,
+        customerName: row.customer_name,
+        type: row.type,
+        amount: row.amount,
+        note: row.note,
+        saleId: row.sale_id ?? undefined,
+        createdAt: row.created_at,
+      };
+    case 'stock_movements':
+      return {
+        id: row.id,
+        shopId: row.shop_id,
+        productId: row.product_id,
+        productName: row.product_name,
+        type: row.type,
+        quantity: row.quantity,
+        previousStock: row.previous_stock,
+        newStock: row.new_stock,
+        note: row.note,
+        createdAt: row.created_at,
+      };
+    case 'orders':
+      return {
+        id: row.id,
+        shopId: row.shop_id,
+        orderNumber: row.order_number,
+        customerId: row.customer_id ?? undefined,
+        customerName: row.customer_name,
+        customerPhone: row.customer_phone,
+        items: row.items,
+        status: row.status,
+        totalAmount: row.total_amount,
+        notes: row.notes ?? undefined,
+        createdAt: row.created_at,
+      };
+    case 'offers':
+      return {
+        id: row.id,
+        shopId: row.shop_id,
+        title: row.title,
+        description: row.description,
+        discountType: row.discount_type,
+        discountValue: row.discount_value,
+        startAt: row.start_at,
+        endAt: row.end_at,
+        active: row.active,
+      };
+    default:
+      return row;
+  }
+};
+
+const loadCollection = async <T,>(tableName: string, fallback: T[]): Promise<T[]> => {
+  if (!supabase) {
+    return fallback;
+  }
+
+  const { data, error } = await supabase.from(tableName).select('*');
+
+  if (error) {
+    console.error(`Failed to load ${tableName} from Supabase`, error);
+    return fallback;
+  }
+
+  if (!Array.isArray(data) || data.length === 0) {
+    return [];
+  }
+
+  return data.map((row) => deserializeRecord(tableName, row) as T);
+};
+
+const saveCollection = async <T extends { id: string }>(tableName: string, records: T[]) => {
+  if (!supabase) {
+    return;
+  }
+
+  const payload = records.map((record) => serializeRecord(tableName, record));
+
+  const { error } = await supabase.from(tableName).upsert(payload, {
+    onConflict: 'id',
+  });
+
+  if (error) {
+    console.error(`Failed to sync ${tableName} to Supabase`, error);
+  }
+};
+
+const loadLanguagePreference = async (): Promise<Language> => {
+  if (!supabase) {
+    return DEFAULT_LANGUAGE;
+  }
+
+  const { data, error } = await supabase
+    .from('settings')
+    .select('value')
+    .eq('key', 'language')
+    .maybeSingle();
+
+  if (error) {
+    console.error('Failed to load language preference from Supabase', error);
+    return DEFAULT_LANGUAGE;
+  }
+
+  return (data?.value as Language | undefined) || DEFAULT_LANGUAGE;
+};
+
+const saveLanguagePreference = async (lang: Language) => {
+  if (!supabase) {
+    return;
+  }
+
+  const { error } = await supabase.from('settings').upsert(
+    {
+      key: 'language',
+      value: lang,
+    },
+    { onConflict: 'key' }
+  );
+
+  if (error) {
+    console.error('Failed to save language preference to Supabase', error);
+  }
 };
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [language, setLanguageState] = useState<Language>(() => {
-    return (localStorage.getItem(STORAGE_KEYS.LANG) as Language) || 'en';
-  });
+  const [language, setLanguageState] = useState<Language>(DEFAULT_LANGUAGE);
 
   const [currentView, setCurrentView] = useState<ViewType>('dashboard');
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -93,74 +353,103 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [profile] = useState<Profile>(initialProfile);
   const [shop] = useState<Shop>(initialShop);
 
-  const [products, setProducts] = useState<Product[]>(() => {
-    const saved = localStorage.getItem(STORAGE_KEYS.PRODUCTS);
-    return saved ? JSON.parse(saved) : initialProducts;
-  });
+  const [products, setProducts] = useState<Product[]>(initialProducts);
+  const [customers, setCustomers] = useState<Customer[]>(initialCustomers);
+  const [sales, setSales] = useState<Sale[]>(initialSales);
+  const [khataEntries, setKhataEntries] = useState<KhataEntry[]>(initialKhataEntries);
+  const [stockMovements, setStockMovements] = useState<StockMovement[]>(initialStockMovements);
+  const [orders, setOrders] = useState<Order[]>(initialOrders);
+  const [offers, setOffers] = useState<Offer[]>(initialOffers);
 
-  const [customers, setCustomers] = useState<Customer[]>(() => {
-    const saved = localStorage.getItem(STORAGE_KEYS.CUSTOMERS);
-    return saved ? JSON.parse(saved) : initialCustomers;
-  });
-
-  const [sales, setSales] = useState<Sale[]>(() => {
-    const saved = localStorage.getItem(STORAGE_KEYS.SALES);
-    return saved ? JSON.parse(saved) : initialSales;
-  });
-
-  const [khataEntries, setKhataEntries] = useState<KhataEntry[]>(() => {
-    const saved = localStorage.getItem(STORAGE_KEYS.KHATA);
-    return saved ? JSON.parse(saved) : initialKhataEntries;
-  });
-
-  const [stockMovements, setStockMovements] = useState<StockMovement[]>(() => {
-    const saved = localStorage.getItem(STORAGE_KEYS.STOCK);
-    return saved ? JSON.parse(saved) : initialStockMovements;
-  });
-
-  const [orders, setOrders] = useState<Order[]>(() => {
-    const saved = localStorage.getItem(STORAGE_KEYS.ORDERS);
-    return saved ? JSON.parse(saved) : initialOrders;
-  });
-
-  const [offers, setOffers] = useState<Offer[]>(() => {
-    const saved = localStorage.getItem(STORAGE_KEYS.OFFERS);
-    return saved ? JSON.parse(saved) : initialOffers;
-  });
-
-  // Sync to localStorage
-  const setLanguage = (lang: Language) => {
-    setLanguageState(lang);
-    localStorage.setItem(STORAGE_KEYS.LANG, lang);
-  };
+  const hydratedRef = useRef(false);
 
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(products));
+    const hydrate = async () => {
+      const [loadedProducts, loadedCustomers, loadedSales, loadedKhataEntries, loadedStockMovements, loadedOrders, loadedOffers, loadedLanguage] = await Promise.all([
+        loadCollection<Product>('products', initialProducts),
+        loadCollection<Customer>('customers', initialCustomers),
+        loadCollection<Sale>('sales', initialSales),
+        loadCollection<KhataEntry>('khata_entries', initialKhataEntries),
+        loadCollection<StockMovement>('stock_movements', initialStockMovements),
+        loadCollection<Order>('orders', initialOrders),
+        loadCollection<Offer>('offers', initialOffers),
+        loadLanguagePreference(),
+      ]);
+
+      setProducts(loadedProducts);
+      setCustomers(loadedCustomers);
+      setSales(loadedSales);
+      setKhataEntries(loadedKhataEntries);
+      setStockMovements(loadedStockMovements);
+      setOrders(loadedOrders);
+      setOffers(loadedOffers);
+      setLanguageState(loadedLanguage);
+      hydratedRef.current = true;
+    };
+
+    void hydrate();
+  }, []);
+
+  useEffect(() => {
+    if (!hydratedRef.current || !supabase) {
+      return;
+    }
+
+    void saveCollection('products', products);
   }, [products]);
 
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEYS.CUSTOMERS, JSON.stringify(customers));
+    if (!hydratedRef.current || !supabase) {
+      return;
+    }
+
+    void saveCollection('customers', customers);
   }, [customers]);
 
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEYS.SALES, JSON.stringify(sales));
+    if (!hydratedRef.current || !supabase) {
+      return;
+    }
+
+    void saveCollection('sales', sales);
   }, [sales]);
 
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEYS.KHATA, JSON.stringify(khataEntries));
+    if (!hydratedRef.current || !supabase) {
+      return;
+    }
+
+    void saveCollection('khata_entries', khataEntries);
   }, [khataEntries]);
 
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEYS.STOCK, JSON.stringify(stockMovements));
+    if (!hydratedRef.current || !supabase) {
+      return;
+    }
+
+    void saveCollection('stock_movements', stockMovements);
   }, [stockMovements]);
 
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEYS.ORDERS, JSON.stringify(orders));
+    if (!hydratedRef.current || !supabase) {
+      return;
+    }
+
+    void saveCollection('orders', orders);
   }, [orders]);
 
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEYS.OFFERS, JSON.stringify(offers));
+    if (!hydratedRef.current || !supabase) {
+      return;
+    }
+
+    void saveCollection('offers', offers);
   }, [offers]);
+
+  const setLanguage = (lang: Language) => {
+    setLanguageState(lang);
+    void saveLanguagePreference(lang);
+  };
 
   // Record Sale and update stock & khata automatically
   const recordSale = (data: {
@@ -462,13 +751,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setStockMovements(initialStockMovements);
     setOrders(initialOrders);
     setOffers(initialOffers);
-    localStorage.removeItem(STORAGE_KEYS.PRODUCTS);
-    localStorage.removeItem(STORAGE_KEYS.CUSTOMERS);
-    localStorage.removeItem(STORAGE_KEYS.SALES);
-    localStorage.removeItem(STORAGE_KEYS.KHATA);
-    localStorage.removeItem(STORAGE_KEYS.STOCK);
-    localStorage.removeItem(STORAGE_KEYS.ORDERS);
-    localStorage.removeItem(STORAGE_KEYS.OFFERS);
+    setLanguageState(DEFAULT_LANGUAGE);
+    void saveLanguagePreference(DEFAULT_LANGUAGE);
   };
 
   return (

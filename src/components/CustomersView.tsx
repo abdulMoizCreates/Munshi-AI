@@ -142,9 +142,8 @@ export const CustomersView: React.FC = () => {
                       Khata Balance
                     </span>
                     <span
-                      className={`text-sm font-bold ${
-                        hasKhata ? 'text-amber-700' : 'text-emerald-700'
-                      }`}
+                      className={`text-sm font-bold ${hasKhata ? 'text-amber-700' : 'text-emerald-700'
+                        }`}
                     >
                       {formatPKR(customer.khataBalance)}
                     </span>
