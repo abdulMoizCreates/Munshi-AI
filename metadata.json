@@ -1,0 +1,8 @@
+{
+  "name": "Munshi AI",
+  "description": "Digital business assistant and management platform for Pakistani kiryana and general store shopkeepers, tracking sales, khata, inventory, products, orders, and reports.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
