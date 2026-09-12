@@ -69,20 +69,18 @@ export const Header: React.FC = () => {
   return (
     <header
       id="app-header"
-      className="h-16 bg-white border-b border-slate-200 px-6 flex items-center justify-between gap-4 sticky top-0 z-20 shrink-0"
+      className="h-18 bg-[#0f172a] border-b border-[var(--line-soft)] px-6 flex items-center justify-between gap-4 sticky top-0 z-20 shrink-0"
     >
-      {/* Title & Context */}
       <div className="flex items-center gap-3 min-w-[200px]">
-        <h1 className="text-lg font-bold text-slate-900 tracking-tight">
+        <h1 className="text-[1.05rem] font-bold text-white tracking-tight">
           {getTitle()}
         </h1>
-        <span className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-600 text-xs font-medium">
+        <span className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-slate-800 text-slate-300 text-[11px] font-medium border border-[var(--line-soft)]">
           <Calendar className="w-3 h-3 text-slate-400" />
           {todayStr}
         </span>
       </div>
 
-      {/* Global Search Bar */}
       <div className="flex-1 max-w-md relative">
         <div className="relative">
           <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
@@ -93,36 +91,33 @@ export const Header: React.FC = () => {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder={t.searchPlaceholder}
-            className="w-full pl-9 pr-10 py-1.5 bg-slate-50 hover:bg-slate-100/80 focus:bg-white border border-slate-200 rounded-lg text-xs md:text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition-all"
+            className="w-full pl-9 pr-10 py-2 bg-slate-800 hover:bg-slate-700 focus:bg-slate-700 border border-[var(--line-soft)] rounded-xl text-xs md:text-sm text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[rgba(52,211,153,0.18)] focus:border-[var(--accent)] transition-all"
           />
-          <kbd className="hidden sm:inline-flex items-center justify-center px-1.5 py-0.5 text-[10px] font-mono text-slate-400 bg-white border border-slate-200 rounded absolute right-2.5 top-1/2 -translate-y-1/2 shadow-2xs pointer-events-none">
+          <kbd className="hidden sm:inline-flex items-center justify-center px-1.5 py-0.5 text-[10px] font-mono text-slate-300 bg-slate-700 border border-[var(--line-soft)] rounded-md absolute right-2.5 top-1/2 -translate-y-1/2 shadow-sm pointer-events-none">
             /
           </kbd>
         </div>
       </div>
 
-      {/* Action Utilities */}
       <div className="flex items-center gap-2.5">
-        {/* Low Stock Notification Badge */}
         <button
           id="btn-notifications-inventory"
           onClick={() => setCurrentView('inventory')}
           title={`${lowStockCount} items need restock`}
-          className="relative p-2 rounded-lg text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition-colors"
+          className="relative p-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-colors border border-transparent hover:border-[var(--line-soft)]"
         >
           <Bell className="w-4 h-4" />
           {lowStockCount > 0 && (
-            <span className="absolute top-1 right-1 w-4 h-4 rounded-full bg-amber-500 text-white text-[10px] font-bold flex items-center justify-center border-2 border-white">
+            <span className="absolute top-1.5 right-1.5 w-4 h-4 rounded-full bg-[var(--amber)] text-white text-[10px] font-bold flex items-center justify-center border-2 border-white">
               {lowStockCount}
             </span>
           )}
         </button>
 
-        {/* Primary CTA: Record Sale / Nayi Sale */}
         <button
           id="header-btn-new-sale"
           onClick={() => setCurrentView('sales')}
-          className="flex items-center gap-1.5 px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs md:text-sm font-semibold rounded-lg shadow-xs shadow-emerald-700/20 active:scale-[0.98] transition-all"
+          className="flex items-center gap-1.5 px-3.5 py-2.5 bg-[var(--accent)] hover:bg-[var(--accent-strong)] text-white text-xs md:text-sm font-semibold rounded-xl shadow-[0_12px_20px_rgba(31,122,90,0.2)] active:scale-[0.99] transition-all"
         >
           <Plus className="w-4 h-4" />
           <span>{t.actionNewSale}</span>
